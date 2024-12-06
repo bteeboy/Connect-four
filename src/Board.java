@@ -35,10 +35,10 @@ public class Board {
     }
 
       //method make a move by editing the board double array
-      public void Move(char XorO, int r, int c){
+      public void Move(char BorR, int r, int c){
         r = r-1;
         c = c-1;
-        board[r][c] = XorO;
+        board[r][c] = BorR;
     }
 
     //method to check if move has already been played
@@ -48,34 +48,76 @@ public class Board {
         return board[row][column] == ' ';
     }
 
-    //method to return true check if game is over
-    // public char winnerCheck(){
-    //     //looping over rows and columns to look for a win
-    //     for (int i = 0; i <= 2; i++) {
-    //         //horizontal win check
-    //         if(board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ') {
-    //             return board[i][0];
-    //         }
-    //         //vertical check
-    //         else if(board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ') {
-    //             return board[0][i];
-    //         }
-    //     }
-    //     //checking for diagonal win from top left
-    //     if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
-    //         return board[0][0];
-    //     }
-    //     //checking for diagonal win from bottom left
-    //     else if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ') {
-    //         return board[0][2];
-    //     }
-    //     //if no winner return blank
-    //     return ' ';
-    // }
+    //method to return true check if game is won
+    public char winnerCheck(){
+        //looping over rows and columns to look for wins
+        //horizontal win check
+        for (int r = 0; r < 6; r++) {
+            for (int c = 0; c < 4; c++) {
+                if(board[r][c] == board[r][c+1] && board[r][c+1] == board[r][c+2] && board[r][c+2] == board[r][c+3] && board[r][c] != ' ') {
+                    return board[r][c];
+                }
+            }
+        }
+        //vertical check
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 7; c++) {
+                if(board[r][c] == board[r+1][c] && board[r+1][c] == board[r+2][c] && board[r+2][c] == board[r+3][c] && board[r][c] != ' ') {
+                    return board[r][c];
+                }
+            }
+        }
+        //checking for diagonal win diagonal botom left to top right
+        for (int r = 3; r < 6; r++) {
+            for (int c = 0; c < 4; c++) {
+                if (board[r][c] == board[r-1][c+1] && board[r-1][c+1] == board[r-2][c+2] && board[r-2][c+2] == board[r-3][c+3] && board[r][c] != ' ') {
+                    return board[r][c];
+                }
+            }
+        }
+        //checking for diagonal win diagonal top left to bottom right
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 4; c++) {
+                if (board[r][c] == board[r+1][c-1] && board[r+1][c+1] == board[r+2][c+2] && board[r+2][c+2] == board[r+3][c+3] && board[r][c] != ' ') {
+                    return board[r][c];
+                }
+            }
+        }
+        return ' ';
+    }
+
 
     public static void main(String[] args) {
         Board board = new Board();
         board.initBoard();
         board.displayBoard();
+        board.Move('B', 1, 4);
+        board.Move('B', 2, 3);
+        board.Move('B', 3, 2);
+        // board.Move('B', 4, 1);
+
+        board.Move('R', 1, 7);//6
+        board.Move('R', 2, 6);//5
+        board.Move('R', 3, 5);
+        // board.Move('R', 4, 4);
+
+        board.Move('A', 3, 7);//2,6
+        board.Move('A', 4, 6);//3,5
+        board.Move('A', 5, 5);//4,4
+        board.Move('A', 6, 4);//5,3
+
+
+        // board.Move('B', 3, 5);
+        // board.Move('B', 2, 6);
+        // board.Move('B', 1, 7);
+        board.displayBoard();
+        System.out.println(board.winnerCheck());
+
+        // for (int i = 3; i <7; i++) {
+        //     board.Move('R', i, 1);
+        //     board.displayBoard();
+        //     System.out.println(board.winnerCheck());
+        // };
+        
     }
 }
