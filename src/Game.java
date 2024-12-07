@@ -12,8 +12,8 @@ public class Game {
     private Scanner sc;
     private Player firstPlayer;
     private Player secondPlayer;
-    private Player xPlayer;
-    private Player oPlayer;
+    private Player bPlayer;
+    private Player rPlayer;
     public Board ttcBoard;
     private int numberOfTurns;
 
@@ -32,10 +32,10 @@ public class Game {
         this.coinToss();
         this.startGame();
     }
-    //method to hand out the Xs and Os
+    //method to hand out the black and red tokens
     public void setTokens(){
-        xPlayer.setToken('X');
-        oPlayer.setToken('O');
+        bPlayer.setToken('B');
+        rPlayer.setToken('R');
     }
     //method to set the turns to 1 and start the loop that organizes turns
     public void startGame(){
@@ -54,72 +54,52 @@ public class Game {
         int randomInt = rand.nextInt(2);
         //if first player wins they become x player and go first
           if (randomInt == 1) {
-            this.xPlayer = firstPlayer;
-            this.oPlayer = secondPlayer;
+            this.bPlayer = firstPlayer;
+            this.rPlayer = secondPlayer;
         }//if secondplayer wins they become x player and go first
         else{
-            this.xPlayer = secondPlayer;
-            this.oPlayer = firstPlayer;
+            this.bPlayer = secondPlayer;
+            this.rPlayer = firstPlayer;
         }//assigning tokens
         setTokens();
         //announcing the result to the users
-        System.out.println(xPlayer.returnName()+" has won the coin toss and will play first with Xs");
+        System.out.println(bPlayer.returnName()+" has won the coin toss and will play first with blacks");
     }
 
     //method to figure out who's turn it is.  
     public Player whosTurn(){
         //if it's an odd number of turns x plays
         if ((numberOfTurns % 2 ) != 0) {
-            return xPlayer;
+            return bPlayer;
         }else{
-            return oPlayer;
+            return rPlayer;
         }
     }
     //method to swap who has x and o so that the loser can go first the subsequent round
     public void reverseTurns() {
-        if(oPlayer == firstPlayer) {
-            this.xPlayer = firstPlayer;
-            this.oPlayer = secondPlayer;
+        if(rPlayer == firstPlayer) {
+            this.bPlayer = firstPlayer;
+            this.rPlayer = secondPlayer;
         }else{
-            this.oPlayer = firstPlayer;
-            this.xPlayer = secondPlayer;
+            this.rPlayer = firstPlayer;
+            this.bPlayer = secondPlayer;
         }
         //assigning the tokens again as they've been overwritten
         setTokens();
     }
     
     //method to get user input
-    public String getMove(Player activePlayer){
+    public int  getMove(Player activePlayer){
         //showing the board so users can plan thei rmove
         ttcBoard.displayBoard();
         //reminding them of the rules
-        System.out.println(activePlayer.returnName()+ " it's your move. You are "+activePlayer.returnToken()+". Please enter a row number (1-3) and a column number (1-3) with no spaces (ex:13, 21).");
-        System.out.println("You may not place a token where one has already been played.");
+        System.out.println(activePlayer.returnName()+ " it's your move. You are "+activePlayer.returnToken()+". Please enter a  column number (1-7)");
         //getting user input and reminding them what they played
-        String moveData = sc.nextLine();
+        int moveData = sc.nextInt();
         System.out.println("You've entered "+moveData);
         //sending the input back to the overall move method
         return moveData;
         
-    }
-
-    //method to validate user data takes data from the move method
-    public boolean validateInput(String userInput){
-        //making sure it's the right length
-        if (userInput.length()!= 2) {
-            return false;
-        }
-        //extracting the row and column into ints by converting to char and subtracting a zero
-        int r = userInput.charAt(0)-'0';
-        int c = userInput.charAt(1)-'0';
-        //making sure the input isn't too big or small
-        if(r < 1 || r > 3){
-            return false;
-        }else if (c < 1 || c > 3){
-            return false;
-        }//if the input is valid, call the board's legalMove method to make sure no one's played that move yet
-        //and if no one has return true
-        else return ttcBoard.legalMove(r, c);
     }
 
     //method to get an implement a move using whosTurn and getMove
@@ -127,33 +107,28 @@ public class Game {
         //checking who's turn it is with the whosTurn method
         Player activePlayer = whosTurn();
         //getting the move from the user
-        String moveData = getMove(activePlayer);
+        int moveData = getMove(activePlayer);
         //if it comes back valid, convert to char, send the move to the move method and add a turn to the counter
-        if (validateInput(moveData)) {
-            int r = Character.getNumericValue(moveData.charAt(0));
-            int c = Character.getNumericValue(moveData.charAt(1));
-            ttcBoard.Move(activePlayer.returnToken(), r, c);
+        if (ttcBoard.Move(activePlayer.returnToken(), moveData)==true) {
             numberOfTurns++;
-        }//otherwise inform the user their move isn't valid
-        else{
-            System.out.println("Sorry that isn't a valid move. Please try again");
-        }        
+        }       
     }
 
     //method with loop to initiate moves if victory/ drew conditions aren't met 
     public void gameLoop(){
+        System.out.println("game loop running");
         //run Board's method to check for winner and save it
         char winnerCheckToken = ttcBoard.winnerCheck();
-        //check for draw (every space used up)
-        if (this.numberOfTurns == 10){
-            this.draw(winnerCheckToken);
-        }//if winner check method returns blank get another move and check again
-        else if (winnerCheckToken == ' ') {
+        //if winner check method returns blank get another move and check again
+        if (winnerCheckToken == ' ') {
             this.move();
             this.gameLoop();
-        }//otherwise someone's won so run the win method
-        else {
+        //check for draw (every space used up)
+        }else if (winnerCheckToken =='B'||winnerCheckToken == 'R'){
             this.win(winnerCheckToken);
+
+        }else if(this.numberOfTurns == 43){
+            this.draw(winnerCheckToken);
         }
     }
 
@@ -168,11 +143,12 @@ public class Game {
 
     //method to display a draw 
     public void win(char winningToken){
+        System.out.println("Someone's won!");
         //use token to inform user of the big win
-        if (winningToken =='X'){
-            System.out.println(xPlayer.returnName() +" is the winner with "+winningToken+"!");
+        if (winningToken =='B'){
+            System.out.println(bPlayer.returnName() +" is the winner with "+winningToken+"!");
         }else{
-            System.out.println(oPlayer.returnName() +" is the winner with "+winningToken+"!");
+            System.out.println(rPlayer.returnName() +" is the winner with "+winningToken+"!");
         }//show the user with the display board method
         ttcBoard.displayBoard();
         //running the play again method and sending it the winning token 
@@ -180,48 +156,55 @@ public class Game {
     }
     //method to restart the game with the loser going first
     public void playAgain(char winningToken){
-        String response = playAgainYN();
-        switch (response) {
-            case "Y" -> {
-                if(winningToken ==' ') {
-                    //if the method receives a blank token call coin toss again and start a new game
-                    System.out.println("First move will be randomly decided");
-                    this.coinToss();
-                    this.startNewGame();
-                }if (winningToken == this.oPlayer.returnToken()) {
-                    //if an O token is received X goes first next so inform user and restart game as is
-                    System.out.println(this.oPlayer.returnName() +" won with Os, so tokens remain the same. "+this.xPlayer.returnName()+" plays first with X");
-                    this.startNewGame();
-                }else{
-                    //if X wins, then players need to switch spots with the reverse turns method so the loser goes first. then restart the game
-                    System.out.println(this.xPlayer.returnName()+" won with Xs, so "+this.oPlayer.returnName()+" plays first with X");
-                    this.reverseTurns();
-                    this.startNewGame();
-                }
-            }
-            //if the don't want to play again the program ends
-            case "N" -> System.out.println("Thanks for playing!");
+        System.out.println("launching play again method");
+        System.out.println("received the winning token: " + winningToken);
+        char response = playAgainInput();
+        System.out.println(response);
+        if (response == 'Y') {
+            playAgainTurnOrder(winningToken);
 
+        }else{
+            System.out.println("Thanks for playing!");
         }
     }
     //method to gather user Y/N input
-    public String playAgainYN(){
+    public char playAgainInput(){
         //asking the user if they'd like to play again
         System.out.println("Would you like to play again? (Y/N)");
-        String response = sc.nextLine();
+        char response = sc.next().charAt(0);
         System.out.println("You've entered "+response);
         //running method to validate reponse
-        if (YNValidation(response)==false) {
-            playAgainYN();
+        if (playAgainInputValidation(response)==false) {
+            playAgainInput();
         }
         return response;
     }
     //method to make sure they enter Y or N
-    public boolean YNValidation(String response){
-        if(!"Y".equals(response) && !"N".equals(response)) {
-            System.out.println("Please enter 'Y' or 'N'");
-            return false;
-        }return true;
+    public boolean playAgainInputValidation(char response){
+        if(response == 'Y' || response == 'N') {
+            return true;
+        }            
+        System.out.println("Please try again");
+        return false;
     }
+    public void playAgainTurnOrder(char winningToken ){
+        System.out.println("deciding the turn order");
+        if(winningToken ==' ') {
+            //if the method receives a blank token call coin toss again and start a new game
+            System.out.println("First move will be randomly decided");
+            this.coinToss();
+            this.startNewGame();
+        }if (winningToken == this.rPlayer.returnToken()) {
+            //if an O token is received X goes first next so inform user and restart game as is
+            System.out.println(this.rPlayer.returnName() +" won with red, so tokens remain the same. "+this.bPlayer.returnName()+" plays first with black");
+            this.startNewGame();
+        }else{
+            //if X wins, then players need to switch spots with the reverse turns method so the loser goes first. then restart the game
+            System.out.println(this.bPlayer.returnName()+" won with black, so "+this.rPlayer.returnName()+" plays first with X");
+            this.reverseTurns();
+            this.startNewGame();
+        }
+    }
+
 
 }

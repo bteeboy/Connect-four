@@ -35,30 +35,24 @@ public class Board {
     }
     //method to calculate which row the token will land on when dropped into a column
     public int getRow(int column){
-        System.out.println(column);
         for (int i = 5; i >= 0; i--) {
-            System.out.println(board[i][column]);
             if(board[i][column]==' '){
                 return i;
             }
         }
+        System.out.println("The row is full");
         return 100;
     }
 
       //method make a move by editing the board double array
-      public void Move(char BorR, int c){
+      public boolean Move(char BorR, int c){
         c = c-1;
         int row = this.getRow(c);
         if (row <=5) {
             board[row][c] = BorR;
+            return true;
         }
-    }
-
-    //method to check if there are tokens in place to hold up the move
-    public boolean legalMove(int r, int c){
-        char row = (char) (r-1);
-        char column = (char)(c-1);
-        return board[row][column] == ' ';
+        return false;
     }
 
     //method to return true check if game is won
@@ -97,29 +91,5 @@ public class Board {
             }
         }
         return ' ';
-    }
-
-
-    public static void main(String[] args) {
-        Board board = new Board();
-        board.initBoard();
-        board.displayBoard();
-  
-        System.out.println(board.winnerCheck());
-        board.Move('A', 1);
-        board.Move('A', 1);
-        board.Move('A', 1);
-        board.Move('A', 7);
-
-        board.displayBoard();
-
-        // System.out.println(board.gravityCheckMove(1, 2));
-
-        // for (int i = 3; i <7; i++) {
-        //     board.Move('R', i, 1);
-        //     board.displayBoard();
-        //     System.out.println(board.winnerCheck());
-        // };
-        
     }
 }
